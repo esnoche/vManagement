@@ -1,8 +1,11 @@
 import { useState } from "react";
-
+import axios from "axios";
+import { Navigate, useNavigate } from "react-router-dom";
 export default function AdminLogin() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [errMsg, setErrMsg] = useState("");
+    const [loggedIn, setLoggedIn] = useState(false);
 
     const loginHandler = (e) => {
         e.preventDefault();
@@ -10,8 +13,28 @@ export default function AdminLogin() {
         console.log("Email:", email);
         console.log("Password:", password);
 
+        if(!email || !password) {
+            setErrMsg("Please enter both email and password.");
+            return;
+        }
+
+        axios.post("http://localhost:3001/adminlogin", {email, password})
+        .then((response) => {
+            console.log(response.data);
+            setLoggedIn(true);
+        })
+        .catch((error) => {
+            console.log(error);
+            setErrMsg("Invalid email or password.");
+        })
+
         setEmail("");
         setPassword("");
+        setErrMsg("");
+    }
+
+    if(loggedIn) {
+        Navigate("/adminpage");
     }
     return (
         <div>
@@ -20,6 +43,7 @@ export default function AdminLogin() {
             </div>
             <div>
                 <form onSubmit={loginHandler}>
+                {errMsg && <p>{errMsg}</p>}
                     <div>
                         <label>
                             Email:

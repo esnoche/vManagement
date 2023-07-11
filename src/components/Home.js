@@ -8,6 +8,7 @@ export default function Home() {
         <Link to="/adminlogin"><button>Admin</button></Link>
         <br/>
         <Link to="/managerlogin"><button>Manager</button></Link>
+        <br/>
         <Link to="/agentlogin"><button>Agent</button></Link> 
     </div>
   )
