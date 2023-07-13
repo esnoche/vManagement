@@ -44,7 +44,6 @@ mongoose.connect("mongodb://localhost:27017/vManagement", {
 })
     .then(() => {
         console.log("connected to mongodb");
-        startServer();
     })
     .catch((err) => {
         console.error("Failed to connect to mongodb", err);
@@ -85,8 +84,7 @@ app.post("/adminlogin", async (req, res) => {
     })
 })
 
-function startServer() {
+
     app.listen(3001, () => {
         console.log("server is running on post 3001");
     });
-}
