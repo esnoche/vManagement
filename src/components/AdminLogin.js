@@ -1,11 +1,12 @@
 import { useState } from "react";
 import axios from "axios";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 export default function AdminLogin() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errMsg, setErrMsg] = useState("");
-    const [loggedIn, setLoggedIn] = useState(false);
+    const navigate = useNavigate("");
+    // const [loggedIn, setLoggedIn] = useState(false);
 
     const loginHandler = (e) => {
         e.preventDefault();
@@ -21,7 +22,8 @@ export default function AdminLogin() {
         axios.post("http://localhost:3001/adminlogin", {email, password})
         .then((response) => {
             console.log(response.data);
-            setLoggedIn(true);
+            navigate("/adminpage");
+            // setLoggedIn(true);
         })
         .catch((error) => {
             console.log(error);
@@ -33,9 +35,6 @@ export default function AdminLogin() {
         setErrMsg("");
     }
 
-    if(loggedIn) {
-        Navigate("/adminpage");
-    }
     return (
         <div>
             <div>
