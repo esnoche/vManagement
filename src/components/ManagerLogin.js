@@ -1,18 +1,40 @@
 import { useState } from "react";
-
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 export default function ManagerLogin() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [errMsg, setErrMsg] = useState("");
+    const navigate = useNavigate("");
+    // const [loggedIn, setLoggedIn] = useState(false);
 
     const loginHandler = (e) => {
         e.preventDefault();
-
+        
         console.log("Email:", email);
         console.log("Password:", password);
 
+        if(!email || !password) {
+            setErrMsg("Please enter both email and password.");
+            return;
+        }
+
+        axios.post("http://localhost:3001/managerlogin", {email, password})
+        .then((response) => {
+            console.log(response.data);
+            navigate("/managerpage");
+            // setLoggedIn(true);
+        })
+        .catch((error) => {
+            console.log(error);
+            setErrMsg("Invalid email or password.");
+        })
+
         setEmail("");
         setPassword("");
+        setErrMsg("");
     }
+
     return (
         <div>
             <div>
@@ -20,6 +42,7 @@ export default function ManagerLogin() {
             </div>
             <div>
                 <form onSubmit={loginHandler}>
+                {errMsg && <p>{errMsg}</p>}
                     <div>
                         <label>
                             Email:
@@ -27,8 +50,8 @@ export default function ManagerLogin() {
                         <br />
                         <input
                             type='email'
-                            value={email}
                             placeholder='Enter your email'
+                            value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
@@ -39,8 +62,8 @@ export default function ManagerLogin() {
                         <br />
                         <input
                             type='password'
-                            value={password}
                             placeholder='Enter password'
+                            value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
