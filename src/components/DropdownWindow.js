@@ -33,7 +33,7 @@ export default function DropdownWindow({ title, data }) {
                                                 <td>{item.name}</td>
                                                 <td>{item.age}</td>
                                             </tr>
-                                        ) 
+                                        )
                                     )
                                 }
                             </tbody>
