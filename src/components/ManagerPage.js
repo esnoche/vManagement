@@ -1,22 +1,26 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react';
 import "./AdminPage.css"
 export default function ManagerPage() {
-  
-  const tableData = [
-    { id: 1, name1: "abcd", age: 19, rn: 1, name: "abc", age: 19,id: 1, name: "abc", age: 19, id: 1, name: "abc", age: 19, id: 1, name: "abc", age: 19,id: 1, name: "abc", age: 19 },
-    { id: 1, name1: "abc", age: 19, rn: 1, name: "abc", age: 19,id: 1, name: "abc", age: 19, id: 1, name: "abc", age: 19, id: 1, name: "abc", age: 19,id: 1, name: "abc", age: 19 },
-    { id: 1, name1: "abc", age: 19, rn: 1, name: "abc", age: 19,id: 1, name: "abc", age: 19, id: 1, name: "abc", age: 19, id: 1, name: "abc", age: 19,id: 1, name: "abc", age: 19 },
-    { id: 1, name1: "abc", age: 19, rn: 1, name: "abc", age: 19,id: 1, name: "abc", age: 19, id: 1, name: "abc", age: 19, id: 1, name: "abc", age: 19,id: 1, name: "abc", age: 19 },
-    { id: 1, name1: "abc", age: 19, rn: 5, name: "abc", age: 19,id: 1, name: "abc", age: 19, id: 1, name: "abc", age: 19, id: 1, name: "abc", age: 19,id: 1, name: "abc", age: 19 },
-    { id: 1, name1: "abc", age: 19, rn: 1, name: "abc", age: 19,id: 1, name: "abc", age: 19, id: 1, name: "abc", age: 19, id: 1, name: "abc", age: 19,id: 1, name: "abc", age: 19 },
-    { id: 1, name1: "abc", age: 19, rn: 1, name: "abc", age: 19,id: 1, name: "abc", age: 19, id: 1, name: "abc", age: 19, id: 1, name: "abc", age: 19,id: 1, name: "abc", age: 19 },
-    { id: 1, name1: "abc", age: 19, rn: 1, name: "abc", age: 19,id: 1, name: "abc", age: 19, id: 1, name: "abc", age: 19, id: 1, name: "abc", age: 19,id: 1, name: "abc", age: 19 },
-    { id: 1, name1: "abc", age: 19, rn: 1, name: "abc", age: 19,id: 1, name: "abc", age: 19, id: 1, name: "abc", age: 19, id: 1, name: "abc", age: 19,id: 1, name: "abc", age: 19 },
-  ];
 
+  const [vehicleData, setVehicleData] = useState([]);
+  const [driverData, setDriverData] = useState([]);
   const [isActive, setIsActive] = useState(false);
   const [isOn, setIsOn] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/vehicleData")
+      .then((response) => response.json())
+      .then((data) => setVehicleData(data))
+      .catch((error) => console.error("Error fetching vehicle data", error))
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/driverData")
+      .then((response) => response.json())
+      .then((data) => setDriverData(data))
+      .catch((error) => console.error("Error fetching vehicle data", error))
+  }, []);
 
   const toggleDropdown = () => {
     setIsActive(!isActive);
@@ -36,47 +40,21 @@ export default function ManagerPage() {
             <table>
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Age</th>
-                  <th>rn</th>
-                  <th>Name</th>
-                  <th>Age</th>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Age</th>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Age</th>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Age</th>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Age</th>
+                  <th>Reg No.</th>
+                  <th>Engine No.</th>
+                  <th>Charge (per shift)</th>
+                  <th>Agent in charge</th>
+                  <th>Driver</th>
                 </tr>
               </thead>
               <tbody>
-                {tableData.map((row) => (
-                  <tr key={row.id}>
-                    <td>{row.id}</td>
-                    <td>{row.name1}</td>
-                    <td>{row.age}</td>
-                    <td>{row.rn}</td>
-                    <td>{row.name}</td>
-                    <td>{row.age}</td>
-                    <td>{row.id}</td>
-                    <td>{row.name}</td>
-                    <td>{row.age}</td>
-                    <td>{row.id}</td>
-                    <td>{row.name}</td>
-                    <td>{row.age}</td>
-                    <td>{row.id}</td>
-                    <td>{row.name}</td>
-                    <td>{row.age}</td>
-                    <td>{row.id}</td>
-                    <td>{row.name}</td>
-                    <td>{row.age}</td>
+                {vehicleData.map((row) => (
+                  <tr key={row["Reg No."]}>
+                    <td>{row["Reg No."]}</td>
+                    <td>{row["Engine No."]}</td>
+                    <td>{row["Charge (per shift)"]}</td>
+                    <td>{row["Agent in charge"]}</td>
+                    <td>{row["Driver"]}</td>
                   </tr>
                 ))}
               </tbody>
@@ -94,29 +72,25 @@ export default function ManagerPage() {
             <table>
               <thead>
                 <tr>
-                <th>ID</th>
                   <th>Name</th>
-                  <th>Age</th>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Age</th>
-                  <th>ID</th>
-                  <th>Name</th>
-                  <th>Age</th>
+                  <th>Addres</th>
+                  <th>Contact</th>
+                  <th>Aadhar</th>
+                  <th>Vehicle</th>
+                  <th>Charge (per shift)</th>
+                  <th>Due</th>
                 </tr>
               </thead>
               <tbody>
-                {tableData.map((row) => (
-                  <tr key={row.id}>
-                    <td>{row.id}</td>
-                    <td>{row.name}</td>
-                    <td>{row.age}</td>
-                    <td>{row.id}</td>
-                    <td>{row.name}</td>
-                    <td>{row.age}</td>
-                    <td>{row.id}</td>
-                    <td>{row.name}</td>
-                    <td>{row.age}</td>
+                {driverData.map((row, index) => (
+                  <tr key={row.index}>
+                    <td>{row.Name}</td>
+                    <td>{row.Address}</td>
+                    <td>{row.Contact}</td>
+                    <td>{row.Aadhar}</td>
+                    <td>{row.Vehicle}</td>
+                    <td>{row["Charge (per shift)"]}</td>
+                    <td>{row.Due}</td>
                   </tr>
                 ))}
               </tbody>
@@ -124,6 +98,10 @@ export default function ManagerPage() {
           </div>
         </div>
       </div>
+
+      <br/>
+
+      
 
     </div>
   );

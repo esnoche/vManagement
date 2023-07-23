@@ -1,11 +1,15 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
 const cors = require("cors");
 
 const app = express();
 app.use(express.json());
+app.use(bodyParser.json());
 app.use(cors());
 
+
+//connecting mongodb
 mongoose.connect("mongodb://localhost:27017/vManagement", {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -17,17 +21,57 @@ mongoose.connect("mongodb://localhost:27017/vManagement", {
         console.error("failed to connect", err);
     })
 
-const dbSchema = new mongoose.Schema({
+
+//schemae
+const userSchema = new mongoose.Schema({
     email: { type: String, required: true },
     password: { type: String, required: true },
 })
 
+const vehicleSchema = new mongoose.Schema({
+    "Reg No.": { type: String, required: true, unique: true, uppercase: true, trim: true },
+    "Engine No.": { type: String, required: true, unique: true, trim: true },
+    "Charge (per shift)": { type: Number, required: true, trim: true },
+    "Agent in charge": { type: String, required: true, uppercase: true, trim: true },
+    Driver: { type: String, default: "NA", uppercase: true, trim: true }
+})
+const vehicleModel = mongoose.model("vehicle", vehicleSchema);
+
+const driverSchema = new mongoose.Schema({
+    Name: { type: String, required: true, uppercase: true, trim: true },
+    Address: { type: String, required: true, uppercase: true, trim: true },
+    Contact: { type: Number, required: true, maxlength: 10, trim: true },
+    "Aadhar No": { type: Number, required: true, maxlength: 10, trim: true },
+    Vehicle: { type: String, required: true, unique: true, uppercase: true, trim: true },
+    "Charge (per shift)": { type: Number, required: true, trim: true },
+    Due: { type: Number, required: true, trim: true }
+})
+const driverModel = mongoose.model("driver", driverSchema);
+
+
+//fetch data from mongodb
+app.get("/api/vehicleData", (req, res) => {
+    vehicleModel.find({}, (err, data) => {
+        if (err) {
+            console.error("Error fetching table data.", err);
+            return res.status(500).json({ error: "Error fetching table data." });
+        }
+        res.json(data);
+    });
+});
+
 
 //admin
-const adminModel = mongoose.model("admin", dbSchema);
+const adminModel = mongoose.model("admin", userSchema);
 app.post("/adminlogin", async (req, res) => {
     const { email, password } = req.body;
 
+
+    const vehicleSchema = new mongoose.Schema({
+
+        "Reg No.": { type: String, required: true, uppercase: true },
+        "Engine No.": { type: String, required: true },
+    })
     try {
         const existingAdmin = await adminModel.findOne({ email });
         if (!existingAdmin) {
@@ -45,10 +89,16 @@ app.post("/adminlogin", async (req, res) => {
 
 
 //manager
-const managerModel = mongoose.model("manager", dbSchema);
+const managerModel = mongoose.model("manager", userSchema);
 app.post("/managerlogin", async (req, res) => {
     const { email, password } = req.body;
 
+
+    const vehicleSchema = new mongoose.Schema({
+
+        "Reg No.": { type: String, required: true, uppercase: true },
+        "Engine No.": { type: String, required: true },
+    })
     try {
         const existingManager = await managerModel.findOne({ email });
         if (!existingManager) {
@@ -66,10 +116,16 @@ app.post("/managerlogin", async (req, res) => {
 
 
 //agents
-const agentModel = mongoose.model("agent", dbSchema);
+const agentModel = mongoose.model("agent", userSchema);
 app.post("/agentlogin", async (req, res) => {
     const { email, password } = req.body;
 
+
+    const vehicleSchema = new mongoose.Schema({
+
+        "Reg No.": { type: String, required: true, uppercase: true },
+        "Engine No.": { type: String, required: true },
+    })
     try {
         const existingAgent = await agentModel.findOne({ email });
         if (!existingAgent) {
