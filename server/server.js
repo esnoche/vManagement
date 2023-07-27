@@ -29,37 +29,86 @@ const userSchema = new mongoose.Schema({
 })
 
 const vehicleSchema = new mongoose.Schema({
-    "Reg No.": { type: String, required: true, unique: true, uppercase: true, trim: true },
-    "Engine No.": { type: String, required: true, unique: true, trim: true },
-    "Charge (per shift)": { type: Number, required: true, trim: true },
-    "Agent in charge": { type: String, required: true, uppercase: true, trim: true },
-    Driver: { type: String, default: "NA", uppercase: true, trim: true }
+    regNo: { type: String, required: true, unique: true, },
+    engNo: { type: String, required: true, unique: true },
+    shiftCharge: { type: Number, required: true },
+    agent: { type: String, required: true },
+    driver: { type: String, required: true }
 })
 const vehicleModel = mongoose.model("vehicle", vehicleSchema);
 
 const driverSchema = new mongoose.Schema({
-    Name: { type: String, required: true, uppercase: true, trim: true },
-    Address: { type: String, required: true, uppercase: true, trim: true },
-    Contact: { type: Number, required: true, maxlength: 10, trim: true },
-    "Aadhar No": { type: Number, required: true, maxlength: 10, trim: true },
-    Vehicle: { type: String, required: true, unique: true, uppercase: true, trim: true },
-    "Charge (per shift)": { type: Number, required: true, trim: true },
-    Due: { type: Number, required: true, trim: true }
+    name: { type: String, required: true },
+    address: { type: String, required: true },
+    contact: { type: Number, required: true },
+    aadharNo: { type: Number, required: true },
+    allocatedVehicle: { type: String, required: true, unique: true },
+    shiftCharge: { type: Number, required: true },
+    due: { type: Number, required: true }
 })
 const driverModel = mongoose.model("driver", driverSchema);
 
 
-//fetch data from mongodb
-app.get("/api/vehicleData", (req, res) => {
-    vehicleModel.find({}, (err, data) => {
-        if (err) {
-            console.error("Error fetching table data.", err);
-            return res.status(500).json({ error: "Error fetching table data." });
+//store vehicle data to mongodb
+app.post("/addvehicle", async (req, res) => {
+    const { regNo, engNo, shiftCharge, agent, driver } = req.body;
+    try {
+        const existingVehicle = await vehicleModel.findOne({ $or: [{ regNo }, { engNo }] });
+        if (existingVehicle) {
+            return res.status(400).json({ error: "vehicle already exists" });
         }
-        res.json(data);
-    });
+        const newVehicle = new vehicleModel({ regNo, engNo, shiftCharge, agent, driver });
+        await newVehicle.save();
+
+        return res.status(201).json({ message: "vehicle created successfully!" });
+    } catch (error) {
+        console.error("error while adding a new vehicle", error);
+        return res.status(500).json({ error: "Internal server error." });
+    }
+})
+
+
+app.get("/showvehicles", async (req, res) => {
+    try {
+        const vehicles = await vehicleModel.find();
+        return res.status(200).json(vehicles);
+    } catch (error) {
+        console.error("Error while fetching vehicles", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
 });
 
+
+
+
+//store driver data to mongodb
+app.post("/adddriver", async (req, res) => {
+    const { name, address, contact, aadharNo, allocatedVehicle, shiftCharge, due } = req.body;
+    try {
+        const existingDriver = await driverModel.findOne({ $or: [{ aadharNo }, { contact }] });
+        if (existingDriver) {
+            return res.status(400).json({ error: "driver already exists" });
+        }
+        const newDriver = new driverModel({ name, address, contact, aadharNo, allocatedVehicle, shiftCharge, due });
+        await newDriver.save();
+
+        return res.status(201).json({ message: "driver added successfully!" });
+    } catch (error) {
+        console.error("error while adding a new driver", error);
+        return res.status(500).json({ error: "Internal server error." });
+    }
+})
+
+
+app.get("/showdrivers", async (req, res) => {
+    try {
+        const drivers = await driverModel.find();
+        return res.status(200).json(drivers);
+    } catch (error) {
+        console.error("Error while fetching drivers", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
 
 //admin
 const adminModel = mongoose.model("admin", userSchema);
