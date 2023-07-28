@@ -54,3 +54,13 @@
 .dropdown.active .dropdown-content {
   max-height: 290px;
 }
+
+.form-container {
+  display: flex;
+  justify-content: space-evenly;
+  margin: 1rem;
+}
+/* 
+.manager-page label {
+  text-align: left;
+} */

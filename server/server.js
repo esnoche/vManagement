@@ -42,8 +42,8 @@ const driverSchema = new mongoose.Schema({
     address: { type: String, required: true },
     contact: { type: Number, required: true },
     aadharNo: { type: Number, required: true },
-    allocatedVehicle: { type: String, required: true, unique: true },
-    shiftCharge: { type: Number, required: true },
+    allotedVehicle: { type: String, required: true },
+    shift: { type: Number, required: true },
     due: { type: Number, required: true }
 })
 const driverModel = mongoose.model("driver", driverSchema);
@@ -83,13 +83,13 @@ app.get("/showvehicles", async (req, res) => {
 
 //store driver data to mongodb
 app.post("/adddriver", async (req, res) => {
-    const { name, address, contact, aadharNo, allocatedVehicle, shiftCharge, due } = req.body;
+    const { name, address, contact, aadharNo, allotedVehicle, shift, due } = req.body;
     try {
         const existingDriver = await driverModel.findOne({ $or: [{ aadharNo }, { contact }] });
         if (existingDriver) {
             return res.status(400).json({ error: "driver already exists" });
         }
-        const newDriver = new driverModel({ name, address, contact, aadharNo, allocatedVehicle, shiftCharge, due });
+        const newDriver = new driverModel({ name, address, contact, aadharNo, allotedVehicle, shift, due });
         await newDriver.save();
 
         return res.status(201).json({ message: "driver added successfully!" });
@@ -114,13 +114,6 @@ app.get("/showdrivers", async (req, res) => {
 const adminModel = mongoose.model("admin", userSchema);
 app.post("/adminlogin", async (req, res) => {
     const { email, password } = req.body;
-
-
-    const vehicleSchema = new mongoose.Schema({
-
-        "Reg No.": { type: String, required: true, uppercase: true },
-        "Engine No.": { type: String, required: true },
-    })
     try {
         const existingAdmin = await adminModel.findOne({ email });
         if (!existingAdmin) {
@@ -141,13 +134,6 @@ app.post("/adminlogin", async (req, res) => {
 const managerModel = mongoose.model("manager", userSchema);
 app.post("/managerlogin", async (req, res) => {
     const { email, password } = req.body;
-
-
-    const vehicleSchema = new mongoose.Schema({
-
-        "Reg No.": { type: String, required: true, uppercase: true },
-        "Engine No.": { type: String, required: true },
-    })
     try {
         const existingManager = await managerModel.findOne({ email });
         if (!existingManager) {
@@ -168,13 +154,6 @@ app.post("/managerlogin", async (req, res) => {
 const agentModel = mongoose.model("agent", userSchema);
 app.post("/agentlogin", async (req, res) => {
     const { email, password } = req.body;
-
-
-    const vehicleSchema = new mongoose.Schema({
-
-        "Reg No.": { type: String, required: true, uppercase: true },
-        "Engine No.": { type: String, required: true },
-    })
     try {
         const existingAgent = await agentModel.findOne({ email });
         if (!existingAgent) {
